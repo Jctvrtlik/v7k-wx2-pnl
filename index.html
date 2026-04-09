@@ -286,16 +286,69 @@
         
         @media print {
             .controls, .tabs {
-                display: none;
+                display: none !important;
             }
             .content {
-                padding: 20px;
+                padding: 10px;
+                max-width: 100%;
             }
             body {
                 background: white;
+                font-size: 11px;
             }
-            .chart-container, .table-container {
+            .header {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            /* Show ALL tabs when printing */
+            .tab-content {
+                display: block !important;
+                page-break-before: always;
+            }
+            .tab-content:first-of-type {
+                page-break-before: avoid;
+            }
+            /* Add tab section headers for print */
+            .tab-content::before {
+                content: attr(data-print-title);
+                display: block;
+                font-size: 18px;
+                font-weight: bold;
+                color: #1B2A4A;
+                border-bottom: 2px solid #C5A55A;
+                padding-bottom: 8px;
+                margin-bottom: 15px;
+            }
+            .chart-container {
+                height: 300px !important;
                 page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+            .table-container {
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+            .kpi-container {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 10px;
+            }
+            .kpi-card {
+                padding: 10px;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            .kpi-value {
+                font-size: 20px;
+            }
+            /* Heatmap prints cleanly */
+            .heatmap-table {
+                font-size: 9px;
+            }
+            .heatmap-cell {
+                padding: 3px !important;
             }
         }
     </style>
@@ -321,17 +374,17 @@
     </div>
     
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('overview')">1. Portfolio Overview</button>
-        <button class="tab" onclick="switchTab('topmovers')">2. Top Movers</button>
-        <button class="tab" onclick="switchTab('trends')">3. Property Trends</button>
-        <button class="tab" onclick="switchTab('correlation')">6. Correlation Analysis</button>
-        <button class="tab" onclick="switchTab('heatmap')">12. Bitly Heatmap vs Occupancy</button>
-        <button class="tab" onclick="switchTab('lagged')">13-14. Lagged Occupancy</button>
+        <button class="tab active" onclick="switchTab('overview')">Portfolio Overview</button>
+        <button class="tab" onclick="switchTab('topmovers')">Top Movers</button>
+        <button class="tab" onclick="switchTab('trends')">Property Trends</button>
+        <button class="tab" onclick="switchTab('correlation')">Correlation Analysis</button>
+        <button class="tab" onclick="switchTab('heatmap')">Bitly Heatmap vs Occupancy</button>
+        <button class="tab" onclick="switchTab('lagged')">Lagged Occupancy</button>
     </div>
     
     <div class="content">
         <!-- Page 1: Portfolio Overview -->
-        <div id="overview" class="tab-content active">
+        <div id="overview" class="tab-content active" data-print-title="1. Portfolio Overview">
             <div class="kpi-container" id="kpiContainer"></div>
             
             <div class="chart-container">
@@ -346,7 +399,7 @@
         </div>
         
         <!-- Page 2: Top Movers -->
-        <div id="topmovers" class="tab-content">
+        <div id="topmovers" class="tab-content" data-print-title="2. Top Movers">
             <div class="chart-container">
                 <div class="chart-title">Top 5 Properties by Gross Week-over-Week Views Change</div>
                 <canvas id="topViewsChart"></canvas>
@@ -391,7 +444,7 @@
         </div>
         
         <!-- Page 3: Property Trends -->
-        <div id="trends" class="tab-content">
+        <div id="trends" class="tab-content" data-print-title="3. Property Trends">
             <div class="property-selector">
                 <label for="propertySelect">Select Property:</label>
                 <select id="propertySelect" onchange="updatePropertyTrends()">
@@ -421,7 +474,7 @@
         </div>
         
         <!-- Page 6: Correlation Analysis -->
-        <div id="correlation" class="tab-content">
+        <div id="correlation" class="tab-content" data-print-title="6. Correlation Analysis">
             <div class="kpi-container" id="correlationKpiContainer"></div>
             
             <div class="chart-container">
@@ -436,7 +489,7 @@
         </div>
         
         <!-- Page 12: Bitly Heatmap vs Occupancy -->
-        <div id="heatmap" class="tab-content">
+        <div id="heatmap" class="tab-content" data-print-title="12. Bitly Heatmap vs Occupancy">
             <div class="table-container">
                 <div class="chart-title">Bitly Clicks vs Occupancy Heatmap (Last 8 Weeks)</div>
                 <table class="heatmap-table" id="heatmapTable">
@@ -445,7 +498,7 @@
         </div>
         
         <!-- Pages 13-14: Lagged Occupancy Analysis -->
-        <div id="lagged" class="tab-content">
+        <div id="lagged" class="tab-content" data-print-title="13-14. Lagged Occupancy Analysis">
             <div class="correlation-grid">
                 <div class="chart-container">
                     <div class="chart-title">Bitly Clicks vs Occupancy Change (1 Week Later)</div>
