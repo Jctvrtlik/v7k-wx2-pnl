@@ -285,23 +285,32 @@
         }
         
         @media print {
-            .controls, .tabs {
+            /* Hide interactive controls */
+            .controls, .tabs, .property-selector, #printPrepNotice {
                 display: none !important;
             }
             .content {
-                padding: 10px;
+                padding: 5px;
                 max-width: 100%;
             }
             body {
                 background: white;
                 font-size: 11px;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
             .header {
                 padding: 10px;
-                margin-bottom: 10px;
+                margin-bottom: 5px;
+                background-color: #1B2A4A !important;
+                color: white !important;
             }
             .header h1 {
                 font-size: 20px;
+            }
+            .header p {
+                font-size: 11px;
             }
             /* Show ALL tabs when printing */
             .tab-content {
@@ -311,44 +320,120 @@
             .tab-content:first-of-type {
                 page-break-before: avoid;
             }
-            /* Add tab section headers for print */
+            /* Section headers for each tab */
             .tab-content::before {
                 content: attr(data-print-title);
                 display: block;
-                font-size: 18px;
+                font-size: 16px;
                 font-weight: bold;
                 color: #1B2A4A;
                 border-bottom: 2px solid #C5A55A;
-                padding-bottom: 8px;
-                margin-bottom: 15px;
+                padding-bottom: 6px;
+                margin-bottom: 12px;
             }
+            /* Charts: fixed height, avoid page breaks */
             .chart-container {
-                height: 300px !important;
+                height: 280px !important;
                 page-break-inside: avoid;
-                margin-bottom: 20px;
+                margin-bottom: 15px;
+                break-inside: avoid;
             }
+            .chart-title {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            canvas {
+                max-height: 260px !important;
+            }
+            /* Tables */
             .table-container {
                 page-break-inside: avoid;
-                margin-bottom: 20px;
+                break-inside: avoid;
+                margin-bottom: 15px;
             }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10px;
+            }
+            th, td {
+                padding: 4px 6px;
+                border: 1px solid #ccc;
+            }
+            th {
+                background-color: #1B2A4A !important;
+                color: white !important;
+            }
+            /* KPI cards: single row */
             .kpi-container {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 10px;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 8px;
+                margin-bottom: 15px;
             }
             .kpi-card {
-                padding: 10px;
+                padding: 8px;
                 box-shadow: none;
                 border: 1px solid #ddd;
+                border-left: 3px solid #C5A55A !important;
             }
             .kpi-value {
-                font-size: 20px;
+                font-size: 18px;
             }
-            /* Heatmap prints cleanly */
-            .heatmap-table {
+            .kpi-label {
                 font-size: 9px;
             }
+            .kpi-change {
+                font-size: 9px;
+            }
+            /* Heatmap: compact for landscape printing */
+            .heatmap-table {
+                font-size: 8px;
+            }
+            .heatmap-table th {
+                padding: 3px 4px;
+                font-size: 8px;
+            }
+            .heatmap-table td {
+                padding: 2px 3px;
+            }
             .heatmap-cell {
-                padding: 3px !important;
+                padding: 2px !important;
+                font-size: 8px;
+            }
+            /* Correlation grid: stack vertically for print */
+            .correlation-grid {
+                grid-template-columns: 1fr !important;
+            }
+            /* Lagged correlation summary table */
+            #correlationSummaryTable {
+                font-size: 9px;
+            }
+            /* Property Trends: show the print summary table, hide dropdown charts */
+            #trends .chart-container {
+                display: none !important;
+            }
+            #trends .property-selector {
+                display: none !important;
+            }
+            #printPropertySummary {
+                display: block !important;
+            }
+            /* Footer with print date */
+            .footer {
+                font-size: 9px;
+                padding: 5px 10px;
+                text-align: center;
+                color: #666;
+                border-top: 1px solid #ccc;
+                margin-top: 10px;
+            }
+            .print-date {
+                display: inline !important;
+            }
+            /* Page margins */
+            @page {
+                size: letter landscape;
+                margin: 0.4in 0.3in;
             }
         }
     </style>
@@ -473,8 +558,8 @@
             </div>
         </div>
         
-        <!-- Page 6: Correlation Analysis -->
-        <div id="correlation" class="tab-content" data-print-title="6. Correlation Analysis">
+        <!-- Section 4: Correlation Analysis -->
+        <div id="correlation" class="tab-content" data-print-title="4. Correlation Analysis">
             <div class="kpi-container" id="correlationKpiContainer"></div>
             
             <div class="chart-container">
@@ -488,8 +573,8 @@
             </div>
         </div>
         
-        <!-- Page 12: Bitly Heatmap vs Occupancy -->
-        <div id="heatmap" class="tab-content" data-print-title="12. Bitly Heatmap vs Occupancy">
+        <!-- Section 5: Bitly Heatmap vs Occupancy -->
+        <div id="heatmap" class="tab-content" data-print-title="5. Bitly Heatmap vs Occupancy">
             <div class="table-container">
                 <div class="chart-title">Bitly Clicks vs Occupancy Heatmap (Last 8 Weeks)</div>
                 <table class="heatmap-table" id="heatmapTable">
@@ -497,8 +582,8 @@
             </div>
         </div>
         
-        <!-- Pages 13-14: Lagged Occupancy Analysis -->
-        <div id="lagged" class="tab-content" data-print-title="13-14. Lagged Occupancy Analysis">
+        <!-- Section 6: Lagged Occupancy Analysis -->
+        <div id="lagged" class="tab-content" data-print-title="6. Lagged Occupancy Analysis">
             <div class="correlation-grid">
                 <div class="chart-container">
                     <div class="chart-title">Bitly Clicks vs Occupancy Change (1 Week Later)</div>
@@ -534,7 +619,7 @@
     </div>
     
     <div class="footer">
-        JB Partners / SKYE Investment Group | Data as of <span id="dataDate"></span>
+        JB Partners / SKYE Investment Group | Data as of <span id="dataDate"></span> <span class="print-date" style="display:none;"> | Printed: <span id="printDate"></span></span>
     </div>
     
     <script>
@@ -1532,6 +1617,113 @@
             
             document.getElementById('correlationSummaryTable').querySelector('tbody').innerHTML = summaryHtml;
         }
+
+        // ===== PRINT HANDLING =====
+
+        // Build the property summary table for print (replaces interactive dropdown)
+        function buildPrintPropertySummary() {
+            const dates = getDateRange().sort();
+            if (dates.length < 2) return;
+
+            const latestDate = dates[dates.length - 1];
+            const priorDate = dates[dates.length - 2];
+            const propertyData = state.filteredData.property_data;
+
+            let rows = [];
+            propertyMaster.forEach(prop => {
+                const latest = propertyData[prop.id]?.[latestDate] || {};
+                const prior = propertyData[prop.id]?.[priorDate] || {};
+
+                const viewsCurr = latest.views || 0;
+                const viewsPrior = prior.views || 0;
+                const viewsChange = viewsCurr - viewsPrior;
+                const interactions = latest.interactions || 0;
+                const bitly = latest.bitly || 0;
+                const occupancy = latest.occupancy || 0;
+                const occPrior = prior.occupancy || 0;
+                const occChange = occupancy - occPrior;
+
+                rows.push({
+                    name: prop.name,
+                    viewsCurr,
+                    viewsPrior,
+                    viewsChange,
+                    interactions,
+                    bitly,
+                    occupancy,
+                    occChange
+                });
+            });
+
+            // Sort by views descending
+            rows.sort((a, b) => b.viewsCurr - a.viewsCurr);
+
+            const tbody = document.getElementById('printPropertyTable')?.querySelector('tbody');
+            if (!tbody) return;
+
+            tbody.innerHTML = rows.map(r => {
+                const viewsDir = r.viewsChange >= 0 ? '+' : '';
+                const occDir = r.occChange >= 0 ? '+' : '';
+                const occClass = r.occupancy >= 95 ? 'occupancy-good' : (r.occupancy >= 90 ? 'occupancy-fair' : 'occupancy-poor');
+                return `<tr>
+                    <td>${r.name}</td>
+                    <td style="text-align:right">${r.viewsCurr.toLocaleString()}</td>
+                    <td style="text-align:right">${r.viewsPrior.toLocaleString()}</td>
+                    <td style="text-align:right;color:${r.viewsChange >= 0 ? '#28a745' : '#dc3545'}">${viewsDir}${r.viewsChange.toLocaleString()}</td>
+                    <td style="text-align:right">${r.interactions.toLocaleString()}</td>
+                    <td style="text-align:right">${r.bitly.toLocaleString()}</td>
+                    <td style="text-align:right" class="${occClass}">${r.occupancy.toFixed(1)}%</td>
+                    <td style="text-align:right;color:${r.occChange >= 0 ? '#28a745' : '#dc3545'}">${occDir}${(r.occChange * 100).toFixed(0)} bps</td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Force all charts to re-render before print
+        window.addEventListener('beforeprint', function() {
+            // Set print date
+            const printDateEl = document.getElementById('printDate');
+            if (printDateEl) {
+                printDateEl.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            // Build the property summary table
+            buildPrintPropertySummary();
+
+            // Make all tab-content visible so charts render
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.style.display = 'block';
+            });
+
+            // Auto-select first property if none selected (for trends charts)
+            const select = document.getElementById('propertySelect');
+            if (select && !select.value) {
+                select.value = propertyMaster[0]?.id || '';
+                updatePropertyTrends();
+            }
+
+            // Force all charts to resize for print dimensions
+            Object.values(window.charts || {}).forEach(chart => {
+                if (chart && chart.resize) {
+                    chart.options.animation = false;
+                    chart.resize();
+                    chart.update('none');
+                }
+            });
+        });
+
+        window.addEventListener('afterprint', function() {
+            // Restore tab visibility to CSS-controlled state
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.style.display = '';
+            });
+        });
+
+        // Also build the print summary on initial load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(buildPrintPropertySummary, 500);
+        });
     </script>
 </body>
 </html>
